@@ -7,14 +7,12 @@ from sqlalchemy import Column, DateTime, String
 
 Base = declarative_base()
 
-
 class BaseModel:
     """A base class for all hbnb models"""
-
     id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-
+    created_at = Column(DateTime, nullable=False, default=datetime.now())
+    updated_at = Column(DateTime, nullable=False, default=datetime.now())
+    
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
         self.id = str(uuid.uuid4())
@@ -24,7 +22,7 @@ class BaseModel:
             for key, value in kwargs.items():
                 if key == "created_at" or key == "updated_at":
                     value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
-                if hasattr(self, key):
+                if key != '__class__' and hasattr(self, key):
                     setattr(self, key, value)
 
     def __str__(self):
@@ -35,7 +33,7 @@ class BaseModel:
     def save(self):
         """Updates updated_at with current time when instance is changed"""
         from models import storage
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now()
         storage.new(self)
         storage.save()
 
@@ -54,8 +52,6 @@ class BaseModel:
         return dictionary
 
     def delete(self):
-        """
-        delete the current instance from the storage
-        """
+        """Delete the current instance from the storage"""
         from models import storage
         storage.delete(self)
