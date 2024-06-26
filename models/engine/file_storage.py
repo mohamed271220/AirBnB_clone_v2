@@ -9,18 +9,29 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self, class_name=None):
-        """Returns a dictionary of models currently in storage"""
-        if class_name:
-            if type(class_name) == str:
-                class_name = globals().get(class_name)
-            if class_name and issubclass(class_name, BaseModel):
-                return {k: v for k, v in self.__objects.items() if isinstance(v, class_name)}
+    def all(self, cls=None):
+        """Returns a dictionary of models currently in storage.
+
+        Args:
+            cls (class, optional): If specified, filters the result to include
+                only objects of the specified class.
+
+        Returns:
+            dict: A dictionary containing objects in storage.
+        """
+        if cls:
+            if isinstance(cls, str):
+                cls = globals().get(cls)
+            if cls and issubclass(cls, BaseModel):
+                cls_dict = {k: v for k,
+                            v in self.__objects.items() if isinstance(v, cls)}
+                return cls_dict
         return FileStorage.__objects
 
     def new(self, obj):
@@ -37,9 +48,7 @@ class FileStorage:
             json.dump(temp, f)
 
     def reload(self):
-        """Loads storage dictionary from file"""
-
-
+        """Loads storage dictionary from file."""
         classes = {
                     'BaseModel': BaseModel, 'User': User, 'Place': Place,
                     'State': State, 'City': City, 'Amenity': Amenity,
@@ -56,16 +65,17 @@ class FileStorage:
         except json.decoder.JSONDecodeError:
             pass
 
-    def delete(self, obj = None):
+    def delete(self, obj=None):
         """
-        Delete obj from __objects if it’s inside - if obj is equal to None,
-        the method should not do anything
+         Delete obj from __objects if it’s inside - if obj is equal to None,
+           the method should not do anything
         """
         if obj is None:
             return
-        targetObj = f"{obj.__class__.__name__}.{obj.id}"
+        obj_to_del = f"{obj.__class__.__name__}.{obj.id}"
+
         try:
-            del FileStorage.__objects[targetObj]
+            del FileStorage.__objects[obj_to_del]
         except AttributeError:
             pass
         except KeyboardInterrupt:
