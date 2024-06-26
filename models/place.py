@@ -52,6 +52,7 @@ class Place(BaseModel, Base):
             """
             getter attribute amenities that returns the list of Amenity instances
             """
+            from models import storage
             amenity_list = []
             for amenity in storage.all(Amenity).values():
                 if amenity.id in self.amenity_ids:
