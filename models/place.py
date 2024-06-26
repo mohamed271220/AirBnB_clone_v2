@@ -6,10 +6,9 @@ from sqlalchemy import (Column, String,
                         Integer, Table)
 from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
-from models import storage
 from models.amenity import Amenity
 
-association_table = Table('place_amenities', Base.metadata,
+association_table = Table('place_amenity', Base.metadata,
                           Column('place_id', String(60),
                                  ForeignKey('places.id'),
                                  primary_key=True,
@@ -34,10 +33,10 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     amenity_ids = []
     reviews = relationship("Review", backref="place", cascade="all, delete-orphan")
-    amenities = relationship("Amenity", secondary="place_amenities", viewonly=False, cascade="all, delete-orphan", overlaps="place_amenities")
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False, overlaps="place_amenity")
     
     if getenv("HBNB_TYPE_STORAGE") != "db":
-        @property
+        @property        
         def reviews(self):
             """getter attribute reviews that returns the list of Review instances"""
             from models import storage
