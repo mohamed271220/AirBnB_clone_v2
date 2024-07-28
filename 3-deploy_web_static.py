@@ -14,7 +14,7 @@ env.hosts = ['100.26.222.128', '54.236.33.232']
 
 def do_pack():
     """generates a tgz archive"""
-    try:
+    try:web_flask
         date = datetime.now().strftime("%Y%m%d%H%M%S")
         if isdir("versions") is False:
             local("mkdir versions")
